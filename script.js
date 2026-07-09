@@ -91,9 +91,11 @@ function extinguishCandles(){
 
 }
 
-function showMessage() {
+function showMessage(){
 
     container.style.display = "none";
+
+    message.classList.remove("hidden");
 
     message.classList.add("show");
 
