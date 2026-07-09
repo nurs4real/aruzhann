@@ -1,60 +1,41 @@
 const button = document.getElementById("startButton");
 const flames = document.querySelectorAll(".flame");
 const message = document.getElementById("message");
+const container = document.querySelector(".container");
+
+let audioContext;
+let analyser;
+let microphone;
+let dataArray;
+let listening = false;
 
 button.addEventListener("click", async () => {
 
-    button.innerText = "Үрлеңіз...";
+    button.innerHTML = "🎤 Үрлеңіз...";
 
-    try{
+    try {
 
         const stream = await navigator.mediaDevices.getUserMedia({
-            audio:true
+            audio: true
         });
 
-        const audioContext = new AudioContext();
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-        const source = audioContext.createMediaStreamSource(stream);
+        microphone = audioContext.createMediaStreamSource(stream);
 
-        const analyser = audioContext.createAnalyser();
+        analyser = audioContext.createAnalyser();
 
         analyser.fftSize = 256;
 
-        source.connect(analyser);
+        microphone.connect(analyser);
 
-        const data = new Uint8Array(analyser.frequencyBinCount);
+        dataArray = new Uint8Array(analyser.frequencyBinCount);
 
-        function listen(){
+        listening = true;
 
-            analyser.getByteFrequencyData(data);
+        detectBlow(stream);
 
-            let volume = 0;
-
-            for(let i=0;i<data.length;i++){
-
-                volume += data[i];
-
-            }
-
-            volume /= data.length;
-
-            if(volume>35){
-
-                blowOut();
-
-                stream.getTracks().forEach(track=>track.stop());
-
-                return;
-
-            }
-
-            requestAnimationFrame(listen);
-
-        }
-
-        listen();
-
-    }catch(e){
+    } catch (e) {
 
         alert("Микрофонға рұқсат беріңіз 😊");
 
@@ -62,7 +43,39 @@ button.addEventListener("click", async () => {
 
 });
 
-function blowOut(){
+function detectBlow(stream){
+
+    if(!listening) return;
+
+    analyser.getByteFrequencyData(dataArray);
+
+    let total = 0;
+
+    for(let i=0;i<dataArray.length;i++){
+
+        total += dataArray[i];
+
+    }
+
+    let volume = total / dataArray.length;
+
+    if(volume > 35){
+
+        listening = false;
+
+        stream.getTracks().forEach(track => track.stop());
+
+        extinguishCandles();
+
+        return;
+
+    }
+
+    requestAnimationFrame(()=>detectBlow(stream));
+
+}
+
+function extinguishCandles(){
 
     flames.forEach((flame,index)=>{
 
@@ -70,78 +83,77 @@ function blowOut(){
 
             flame.classList.add("off");
 
-        },index*250);
+        },index*350);
 
     });
 
-    setTimeout(()=>{
-
-        showConfetti();
-
-    },1200);
+    setTimeout(showMessage,1800);
 
 }
 
-function showConfetti(){
+function showMessage() {
 
-    createHearts();
+    container.style.display = "none";
 
-    document.querySelector(".container").style.display="none";
-
-    message.classList.remove("hidden");
+    message.classList.add("show");
 
     typeWriter();
+
+    createHearts();
 
 }
 
 function typeWriter(){
 
-    const p=document.querySelector("#message p");
+    const textElement = document.querySelector("#message p");
 
-    const text=p.innerText;
+    const text = textElement.innerText;
 
-    p.innerText="";
+    textElement.innerText = "";
 
-    let i=0;
+    let i = 0;
 
-    function write(){
+    function typing(){
 
-        if(i<text.length){
+        if(i < text.length){
 
-            p.innerHTML+=text.charAt(i);
+            textElement.innerHTML += text.charAt(i);
 
             i++;
 
-            setTimeout(write,35);
+            setTimeout(typing,35);
 
         }
 
     }
 
-    write();
+    typing();
 
 }
 
 function createHearts(){
 
-    for(let i=0;i<80;i++){
+    for(let i=0;i<70;i++){
 
-        let heart=document.createElement("div");
+        const heart=document.createElement("div");
 
         heart.innerHTML="❤️";
 
         heart.style.position="fixed";
         heart.style.left=Math.random()*100+"vw";
-        heart.style.top="110vh";
-        heart.style.fontSize=(18+Math.random()*25)+"px";
-        heart.style.transition="6s linear";
+        heart.style.top="105vh";
+        heart.style.fontSize=(18+Math.random()*20)+"px";
+        heart.style.pointerEvents="none";
+        heart.style.transition="all 6s linear";
+        heart.style.zIndex="9999";
 
         document.body.appendChild(heart);
 
         setTimeout(()=>{
 
             heart.style.top="-10vh";
-            heart.style.transform=`translateX(${Math.random()*200-100}px)`;
+            heart.style.transform=`translateX(${Math.random()*200-100}px) rotate(${Math.random()*360}deg)`;
+            heart.style.opacity="0";
 
         },50);
 
@@ -149,7 +161,7 @@ function createHearts(){
 
             heart.remove();
 
-        },7000);
+        },6500);
 
     }
 
