@@ -3,9 +3,7 @@ const flames = document.querySelectorAll(".flame");
 const message = document.getElementById("message");
 const container = document.querySelector(".container");
 
-let audioContext;
 let analyser;
-let microphone;
 let dataArray;
 let listening = false;
 
@@ -19,12 +17,11 @@ button.addEventListener("click", async () => {
             audio: true
         });
 
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-        microphone = audioContext.createMediaStreamSource(stream);
+        const microphone = audioContext.createMediaStreamSource(stream);
 
         analyser = audioContext.createAnalyser();
-
         analyser.fftSize = 256;
 
         microphone.connect(analyser);
@@ -35,7 +32,7 @@ button.addEventListener("click", async () => {
 
         detectBlow(stream);
 
-    } catch (e) {
+    } catch (err) {
 
         alert("Микрофонға рұқсат беріңіз 😊");
 
@@ -49,15 +46,15 @@ function detectBlow(stream){
 
     analyser.getByteFrequencyData(dataArray);
 
-    let total = 0;
+    let sum = 0;
 
-    for(let i=0;i<dataArray.length;i++){
+    for(let i = 0; i < dataArray.length; i++){
 
-        total += dataArray[i];
+        sum += dataArray[i];
 
     }
 
-    let volume = total / dataArray.length;
+    let volume = sum / dataArray.length;
 
     if(volume > 35){
 
@@ -71,7 +68,7 @@ function detectBlow(stream){
 
     }
 
-    requestAnimationFrame(()=>detectBlow(stream));
+    requestAnimationFrame(() => detectBlow(stream));
 
 }
 
@@ -83,11 +80,11 @@ function extinguishCandles(){
 
             flame.classList.add("off");
 
-        },index*350);
+        },index*300);
 
     });
 
-    setTimeout(showMessage,1800);
+    setTimeout(showMessage,1500);
 
 }
 
@@ -96,7 +93,6 @@ function showMessage(){
     container.style.display = "none";
 
     message.classList.remove("hidden");
-
     message.classList.add("show");
 
     typeWriter();
@@ -107,29 +103,29 @@ function showMessage(){
 
 function typeWriter(){
 
-    const textElement = document.querySelector("#message p");
+    const p = document.querySelector("#message p");
 
-    const text = textElement.innerText;
+    const text = p.textContent;
 
-    textElement.innerText = "";
+    p.textContent = "";
 
     let i = 0;
 
-    function typing(){
+    function write(){
 
         if(i < text.length){
 
-            textElement.innerHTML += text.charAt(i);
+            p.textContent += text.charAt(i);
 
             i++;
 
-            setTimeout(typing,35);
+            setTimeout(write,15);
 
         }
 
     }
 
-    typing();
+    write();
 
 }
 
@@ -143,10 +139,10 @@ function createHearts(){
 
         heart.style.position="fixed";
         heart.style.left=Math.random()*100+"vw";
-        heart.style.top="105vh";
+        heart.style.top="110vh";
         heart.style.fontSize=(18+Math.random()*20)+"px";
         heart.style.pointerEvents="none";
-        heart.style.transition="all 6s linear";
+        heart.style.transition="6s linear";
         heart.style.zIndex="9999";
 
         document.body.appendChild(heart);
@@ -154,7 +150,7 @@ function createHearts(){
         setTimeout(()=>{
 
             heart.style.top="-10vh";
-            heart.style.transform=`translateX(${Math.random()*200-100}px) rotate(${Math.random()*360}deg)`;
+            heart.style.transform=`translateX(${Math.random()*200-100}px)`;
             heart.style.opacity="0";
 
         },50);
