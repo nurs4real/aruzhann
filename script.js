@@ -105,31 +105,18 @@ function showMessage(){
 
 }
 
-function typeWriter(){
+function showText(){
 
-    const textElement = document.querySelector("#message p");
+    const p = document.querySelector("#message p");
 
-    const text = textElement.innerText;
+    p.style.opacity = "0";
+    p.style.transform = "translateY(20px)";
+    p.style.transition = "all 1.5s ease";
 
-    textElement.innerText = "";
-
-    let i = 0;
-
-    function typing(){
-
-        if(i < text.length){
-
-            textElement.innerHTML += text.charAt(i);
-
-            i++;
-
-            setTimeout(typing,35);
-
-        }
-
-    }
-
-    typing();
+    setTimeout(() => {
+        p.style.opacity = "1";
+        p.style.transform = "translateY(0)";
+    }, 200);
 
 }
 
