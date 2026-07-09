@@ -91,6 +91,18 @@ function extinguishCandles(){
 
 }
 
+function showMessage() {
+
+    container.style.display = "none";
+
+    message.classList.add("show");
+
+    typeWriter();
+
+    createHearts();
+
+}
+
 function typeWriter(){
 
     const textElement = document.querySelector("#message p");
@@ -118,21 +130,6 @@ function typeWriter(){
     typing();
 
 }
-function showText(){
-
-    const p = document.querySelector("#message p");
-
-    p.style.opacity = "0";
-    p.style.transform = "translateY(20px)";
-    p.style.transition = "all 1.5s ease";
-
-    setTimeout(() => {
-        p.style.opacity = "1";
-        p.style.transform = "translateY(0)";
-    }, 200);
-
-}
-
 function createHearts(){
 
     for(let i=0;i<70;i++){
