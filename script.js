@@ -91,20 +91,33 @@ function extinguishCandles(){
 
 }
 
-function showMessage(){
+function typeWriter(){
 
-    container.style.display = "none";
+    const textElement = document.querySelector("#message p");
 
-    message.classList.remove("hidden");
+    const text = textElement.innerText;
 
-    message.classList.add("show");
+    textElement.innerText = "";
 
-    typeWriter();
+    let i = 0;
 
-    createHearts();
+    function typing(){
+
+        if(i < text.length){
+
+            textElement.innerHTML += text.charAt(i);
+
+            i++;
+
+            setTimeout(typing,35);
+
+        }
+
+    }
+
+    typing();
 
 }
-
 function showText(){
 
     const p = document.querySelector("#message p");
