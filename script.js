@@ -130,6 +130,7 @@ function typeWriter(){
     typing();
 
 }
+
 function createHearts(){
 
     for(let i=0;i<70;i++){
